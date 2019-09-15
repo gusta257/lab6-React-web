@@ -52,7 +52,7 @@
     }
     class Tablero extends React.Component {
       render(){
-        const cartas = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+        //const cartas = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
         const tabs = {
           display: 'flex',
           flexWrap: 'wrap',
@@ -64,7 +64,7 @@
         return (
           <div style={tabs} >
             {
-              cartas.map((carta) => <Carta></Carta>)
+              this.props.baraja.map((carta) => <Carta icono={carta.icono}/>)
             }
             
           </div>
@@ -80,7 +80,9 @@
           backgroundColor: '#ffb300'
         }
         return(
-          <div style={carts}></div>
+          <div style={carts}>
+            <img src={`${this.props.icono}`}></img>  
+          </div>
         )
       }
     }
@@ -92,6 +94,7 @@
           this.cards = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6', 'card7', 'card8']
           this.cardList = []
           this.startGame()
+          
         }
         startGame(){
           let randomizedCards = []
@@ -104,7 +107,8 @@
           (i, index) => {
             this.cardList.push({
               index: index,
-              icono: 
+              
+              icono: "https://github.com/gusta257/lab6-React-web/blob/master/Images/"+i+".png",
               //flipped: false,
               //solved: false,
               text: i
@@ -155,7 +159,8 @@
             <div>
               
               <Header />
-              <Tablero />
+              <Tablero
+                baraja = {this.cardList} />
               
             </div>
           )
