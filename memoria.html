@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Hello!</title>
+    <title>Memoria Lab6</title>
     <style type="text/css">
       body {
         background: black;
@@ -17,6 +17,12 @@
     <script type="text/babel">
     
     class Header extends React.Component {
+      constructor(props){
+          super(props)
+          this.state = {
+            
+          }
+        }
       render(){
         const header = {
           height: '50px',
@@ -39,21 +45,129 @@
         }
         return (
           <div style={header}>
-            <div style={titulo}> React-Parejas </div>
+            <div style={titulo}> Memoria </div>
             <div>
                 <button style={boton}>
                   Reiniciar
                 </button>
             </div>
-            <div style={titulo}> Intentos: </div>
+            <div style={titulo}> Intentos: {this.props.moves} </div>
+          </div>
+        )
+      }
+    }
+    class Carta extends React.Component {
+      constructor(props){
+        super(props)
+        this.state = {
+           
+          }
+      }
+      clicked(carta){
+          console.log(carta)
+          this.props.click(carta)
+        }
+
+      render(){
+        const {carta} = this.props;
+
+        const carts = {
+          width: '128px',
+          height: '128px',
+          margin: '10px'
+          
+         
+        }
+        const portada = {
+          width: '128px',
+          height: '128px',
+          
+          backgroundColor: '#ffb300'
+        }
+        const contenido = {
+          width: '128px',
+          height: '128px',
+          
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor:'rgb(3,220,244)'
+        }
+        return(
+          
+          <div onClick={() => this.clicked(carta)} style={carts}>
+            <div  style={carta.volteada ? contenido : portada }>
+              
+              <img src={`${this.props.icono}`}></img>
+            </div>  
           </div>
         )
       }
     }
     class Tablero extends React.Component {
+      onClick(index, cartaN) {
+        console.log("el name es "+cartaN);
+        console.log("el index es "+index);
+        let seleccionadas = this.props.cartasA
+        console.log("el lenght de las seleccionadas es " +seleccionadas.length);
+      
+          if (seleccionadas.length < 2){
+          let card = {cartaN, index}
+          console.log("entra al if del len <2")
+          seleccionadas.push(card)
+          
+          let baraja = this.props.baraja
+
+          if (baraja[index].buena == false){
+            baraja[index].volteada = true
+
+          }else {
+            console.log("limpia")
+            seleccionadas = []
+          }
+          
+          
+          console.log(seleccionadas)
+          this.setState({seleccionadas})
+          if (seleccionadas.length == 2){
+            console.log("entramos o k pez")
+            setTimeout(() => {
+              this.checkCards();
+
+            },
+            1000)
+          }
+
+        }
+        console.log(seleccionadas)
+      }
+      checkCards() {
+          let i = 0 
+          let baraja = this.props.baraja
+          let seleccionadas = this.props.cartasA
+          const limpia = this.props.limpia
+          console.log("el valor de i es "+i)
+          
+         if ((seleccionadas[i].index != seleccionadas[i+1].index) && (seleccionadas[i].cartaN == seleccionadas[i+1].cartaN)) {
+                baraja[seleccionadas[0].index].buena = true
+                baraja[seleccionadas[1].index].buena = true
+                console.log("correct")
+
+              }else {
+                baraja[seleccionadas[0].index].volteada = false
+                baraja[seleccionadas[1].index].volteada = false
+                console.log("incorrect")
+              }
+              i++
+
+          this.setState({seleccionadas : []})
+
+        
+        }
+        
       render(){
-        //const cartas = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-        const tabs = {
+
+        const tablero = {
           display: 'flex',
           flexWrap: 'wrap',
           width: '700px',
@@ -62,30 +176,16 @@
           justifyContent: 'space-around'          
         }
         return (
-          <div style={tabs} >
+          <div style={tablero} >
             {
-              this.props.baraja.map((carta) => <Carta icono={carta.icono}/>)
+              this.props.baraja.map((carta) => <Carta icono={carta.icono} carta = {carta} click={() => {this.onClick(carta.index, carta.text)}}/>)
             }
             
           </div>
         )
         }
     }
-    class Carta extends React.Component {
-      render(){
-        const carts = {
-          width: '125px',
-          height: '125px',
-          margin: '10px',
-          backgroundColor: '#ffb300'
-        }
-        return(
-          <div style={carts}>
-            <img src={`${this.props.icono}`}></img>  
-          </div>
-        )
-      }
-    }
+    
       
       class Game extends React.Component {
         constructor(props) {
@@ -94,44 +194,33 @@
           this.cards = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6', 'card7', 'card8']
           this.cardList = []
           this.startGame()
+          this.state = {
+            
+            seleccionadas: [],
+            moves: 0,
+            limpia: []
+          }
           
         }
+ 
         startGame(){
           let randomizedCards = []
           randomizedCards = this.cards.concat(this.cards)
           
           randomizedCards = this.shuffle(randomizedCards)
-          //console.log(this.randomizedCards[0])
+
           this.cardList = []
           randomizedCards.forEach(
           (i, index) => {
             this.cardList.push({
               index: index,
               icono: "https://github.com/gusta257/lab6-React-web/blob/master/Images/"+i+".png?raw=true",
-              //flipped: false,
-              //solved: false,
+              volteada: false,
+              buena: false,
               text: i
             })
           }
           )
-          
-          /*console.log(this.cardList[0])
-          console.log(this.cardList[1])
-          console.log(this.cardList[2])
-          console.log(this.cardList[3])
-          console.log(this.cardList[4])
-          console.log(this.cardList[5])
-          console.log(this.cardList[6])
-          console.log(this.cardList[7])
-          console.log(this.cardList[8])
-          console.log(this.cardList[9])
-          console.log(this.cardList[10])
-          console.log(this.cardList[11])
-          console.log(this.cardList[12])
-          console.log(this.cardList[13])
-          console.log(this.cardList[14])
-          console.log(this.cardList[15])*/
-
         }
 
         shuffle(array){
@@ -147,19 +236,13 @@
         }
         
         render() {
-          const style = {
-            backgroundColor: 'purple',
-            width: '400px',
-            height: '400px',
-            position: 'relative'
-          }
+
           return (
             
             <div>
               
               <Header />
-              <Tablero
-                baraja = {this.cardList} />
+              <Tablero baraja = {this.cardList} cartasA={this.state.seleccionadas} limpia={this.state.limpia} />
               
             </div>
           )
